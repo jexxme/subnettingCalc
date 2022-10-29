@@ -1,10 +1,19 @@
-# IP-Adress Calculator
+import math
 import os
+###############################################################################
+# Function Calls
+###############################################################################
 
 
 def dec2bin(ip):
     ip = [bin(i)[2:].zfill(8) for i in ip]
     ip = "".join(ip)
+
+# Idk what to do with this
+
+
+def hostAmountCalc(hostAmount):
+    return math.log(hostAmount, 2)
 
 
 def IPClass(ip):
@@ -20,94 +29,89 @@ def IPClass(ip):
         return "E"
 
 
-def netmaskCalc(mask):
-    # Calculate Binary Netmask and Wildcard
+def netmaskCalc(ip, mask):
+    # Calculate Binary Subnetmask
+    # FULL IP = 32 Bits
+    #Hostbits = 32 - Subnetbits
+    #Subnetbits = 32 - Hostbits
+    # Example:
+    # IP-Adress: 10.10.0.0/16
+    # Subnetbits: 16
+    # Hostbits: 16
+    # Netmask: 255.255.0.0
+
     netmask_bin = []
-    netmask_dec = []
     for i in range(0, mask):
         netmask_bin.append("1")
     for i in range(mask, 32):
         netmask_bin.append("0")
+    netmask_bin = "".join(netmask_bin)
+
     # Calculate Decimal Netmask
+    netmask_dec = []
     for i in range(0, 4):
         netmask_dec.append(int("".join(netmask_bin[i*8:i*8+8]), 2))
 
-    return netmask_bin
+    netmask_dec = ".".join([str(i) for i in netmask_dec])
+
+    # Split Binary Netmask into 4 octets in a String
+    netmask_bin = [netmask_bin[i:i+8] for i in range(0, len(netmask_bin), 8)]
+    netmask_bin = ".".join(netmask_bin)
+
+    return netmask_dec, netmask_bin
 
 
-def main():
-    # Initiate Input Variables
-    ip = input("IP-Adress: ")
+def subnetmaskCalc(ip, subnetAmount, mask):
+    # Calculate Binary Subnetmask
+    # FULL IP = 32 Bits
+    #Hostbits = 32 - Subnetbits
+    #Subnetbits = 32 - Hostbits
+    # Example:
+    # IP-Adress: 10.10.0.0/16
+    # Subnetbits: 16
+    # Hostbits: 16
+    # Netmask: 255.255.0.0
 
-    # Prepare IP-Adress
-    ip = ip.split(".")
-    ip = [int(i) for i in ip]
+    # Calculate
 
-    # Required Host Amount
-    hostAmount = int(input("Required Host Amount (Optional): "))
-    if hostAmount == 0:
-        hostAmount = 1
+    # Calculate Decimal subnetmask
+    subnetmask_dec = []
+    for i in range(0, 4):
+        subnetmask_dec.append(int("".join(subnetmask_bin[i*8:i*8+8]), 2))
 
-    # Calculate Amount of Subnetbits needed
-    subnetBits = 0
-    while 2**subnetBits < hostAmount:
-        subnetBits += 1
+    subnetmask_dec = ".".join([str(i) for i in subnetmask_dec])
 
-    # Prepare Netmask
-    mask = int(input("Netmask/CIDR: "))
-    # Calculate Binary Netmask and Wildcard
-    netmask_bin = []
-    for i in range(0, mask):
-        netmask_bin.append("1")
-    for i in range(mask, 32):
-        netmask_bin.append("0")
+    # Split Binary subnetmask into 4 octets in a String
+    subnetmask_bin = [subnetmask_bin[i:i+8]
+                      for i in range(0, len(subnetmask_bin), 8)]
+    subnetmask_bin = ".".join(subnetmask_bin)
 
-    # TODO: Implement subnetting
-    subnetAmount = input("Subnet Amount: ")
-    if subnetAmount == "":
-        subnetAmount = 1
-    else:
-        subnetAmount = int(subnetAmount)
-
-    if mask > 32:
-        print("Netmask is too big!")
-        return
-
-    # Calculate the number of hosts
-    hosts = 2**(32-mask) - 2
-
-    # Calculate the number of subnets
-    subnets = 2**(mask-24)
-
-    # Calculate the number of hosts per subnet
-    hostsPerSubnet = hosts/subnets
-
-    # Calculate the first and last IP-Adress of the subnet
-    firstIP = ip[0:3]
-    firstIP.append(0)
-    lastIP = ip[0:3]
-    lastIP.append(255)
-
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print("Ip-Adress: ", ip)
-    print("IP-Adress Class: ", IPClass(ip))
-    print("Binary IP-Adress: ", dec2bin(ip))
-    print("Number of hosts: ", hosts)
-    print("Number of subnets: ", subnets)
-    print("Number of hosts per subnet: ", hostsPerSubnet)
-    print("First IP-Adress: ", firstIP)
-    print("Last IP-Adress: ", lastIP)
-    print("Binary Netmask: ", netmask_bin)
-    input("Press Enter to continue...")
-    start()
+    return subnetmask_dec, subnetmask_bin
 
 
-# Irgendwie sowas wie: Wenn keine Subnetanzahl angegeben ist -> Finde subnetzanzahl heraus und berechne die Subnetze
-# https://networkengineering.stackexchange.com/questions/28121/maximum-number-of-subnets
+def NaIPRangeBaCalc(ip):
+    # # Calculate the first and last IP-Adress of the subnet
+    # firstIP = ip[0:3]
+    # firstIP.append(0)
+    # lastIP = ip[0:3]
+    # lastIP.append(255)
+    # ipRange = str(firstIP) + " - " + str(lastIP)
+
+    # Calculate the Network Adress
+    networkAdress = ip[0:3]
+    networkAdress.append(0)
+
+    # Calculate the Broadcast Adress
+    broadcastAdress = ip[0:3]
+    broadcastAdress.append(255)
+
+    return networkAdress, broadcastAdress
 
 
 def fullCalc():
     # INPUT: IP-Adress, Subnet Amount, Host Amount
+    # OUTPUT: IP-Adress, Binary IP-Adress, IP-Adress Class, Subnet Amount, Host Amount, Netmask, Binary Netmask, Network Adress, IP-Adress Range, Broadcast Adress
+
     ip = input("IP-Adress: ")
     # Prepare IP-Adress
     ip = ip.split(".")
@@ -128,15 +132,17 @@ def fullCalc():
         subnetAmount = 1
     else:
         subnetAmount = int(subnetAmount)
-    # TODO Inplement SNH Notation
-    # OUTPUT: IP-Adress, Binary IP-Adress, IP-Adress Class, Subnet Amount, Host Amount, Netmask, Binary Netmask, Network Adress, IP-Adress Range, Broadcast Adress,
-
-    print("Ip-Adress: ", ip)
     print("Binary IP-Adress: ", dec2bin(ip))
-    print("IP-Adress Class: ", IPClass)
-    print("Subnet Amount: ", subnetAmount)
-    print("Host Amount: ", hostAmount)
-    print("Netmask: ", netmaskCalc(subnetBits))
+    print("IP-Adress Class: ", IPClass(ip))
+    print("\n")
+    print("Netmask: ", netmaskCalc(ip, subnetBits)[0])
+    print("Binary Netmask: ", netmaskCalc(ip, subnetBits)[1])
+    print("\n")
+    print("Subnetmask: ", subnetmaskCalc(ip, subnetAmount, subnetBits)[0])
+    print("Network Adress: ", NaIPRangeBaCalc(ip)[0])
+    print("IP-Adress Range: ", NaIPRangeBaCalc(ip)
+          [0], " - ", NaIPRangeBaCalc(ip)[1])
+    print("Broadcast Adress: ", NaIPRangeBaCalc(ip)[1])
 
 
 def halfCalc():
@@ -152,36 +158,52 @@ def HostAmountCalc():
     pass
 
 
-def start():
+###############################################################################
+# Main
+###############################################################################
+
+# TODOS:
+# SHN Notation
+# Resourcen:
+# https://networkengineering.stackexchange.com/questions/28121/maximum-number-of-subnets
+#
+# Aufgabe:
+# 172.16.0.0/16 auf 300 Netze
+# Bits/Hosts/Schema/Alle N+BC-Adressen!
+#
+
+
+def main():
     os.system('cls' if os.name == 'nt' else 'clear')
     print("-----------------------------------------------------")
     print('       Welcome to the IP-Adress Programm!            ')
     print("-----------------------------------------------------")
     print("\n       What do you want to do?                     ")
     print("-----------------------------------------------------")
-    print("0. Input: IP-Adress, Subnet Amount, Host Amount")
-    print('1. Input: IP-Adress, Host Amount, Netmask/CIDR')
-    print("2. Input: IP-Adress, Netmask/CIDR")
-    print("3. Input: IP-Adress, Host Amount")
-    print("4. Input: IP-Adress")
-    print("5. Exit")
+    print("1. Input: IP-Adress, Subnet Amount, Host Amount")
+    print('2. Input: IP-Adress, Host Amount, Netmask/CIDR')
+    print("3. Input: IP-Adress, Netmask/CIDR")
+    print("4. Input: IP-Adress, Host Amount")
+    print("5. Input: IP-Adress")
+    print("6. Exit")
     print("-----------------------------------------------------")
     choice = input("Your choice: ")
+    os.system('cls' if os.name == 'nt' else 'clear')
     if choice == "1":
-        main()
+        fullCalc()
     elif choice == "2":
-        main()
+        halfCalc()
     elif choice == "3":
-        main()
+        exit()
     elif choice == "4":
-        main()
-    elif choice == "5":
+        exit()
+    elif choice == "6":
         exit()
     else:
         print("Invalid input!")
         input("Press Enter to continue...")
-        start()
+        main()
 
 
 if __name__ == "__main__":
-    start()
+    main()

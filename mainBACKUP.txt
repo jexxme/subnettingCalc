@@ -1,0 +1,64 @@
+# Initiate Input Variables
+    ip = input("IP-Adress: ")
+
+    # Prepare IP-Adress
+    ip = ip.split(".")
+    ip = [int(i) for i in ip]
+
+    # Required Host Amount
+    hostAmount = int(input("Required Host Amount (Optional): "))
+    if hostAmount == 0:
+        hostAmount = 1
+
+    # Calculate Amount of Subnetbits needed
+    subnetBits = 0
+    while 2**subnetBits < hostAmount:
+        subnetBits += 1
+
+    # Prepare Netmask
+    mask = int(input("Netmask/CIDR: "))
+    # Calculate Binary Netmask and Wildcard
+    netmask_bin = []
+    for i in range(0, mask):
+        netmask_bin.append("1")
+    for i in range(mask, 32):
+        netmask_bin.append("0")
+
+    # TODO: Implement subnetting
+    subnetAmount = input("Subnet Amount: ")
+    if subnetAmount == "":
+        subnetAmount = 1
+    else:
+        subnetAmount = int(subnetAmount)
+
+    if mask > 32:
+        print("Netmask is too big!")
+        return
+
+    # Calculate the number of hosts
+    hosts = 2**(32-mask) - 2
+
+    # Calculate the number of subnets
+    subnets = 2**(mask-24)
+
+    # Calculate the number of hosts per subnet
+    hostsPerSubnet = hosts/subnets
+
+    # Calculate the first and last IP-Adress of the subnet
+    firstIP = ip[0:3]
+    firstIP.append(0)
+    lastIP = ip[0:3]
+    lastIP.append(255)
+
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("Ip-Adress: ", ip)
+    print("IP-Adress Class: ", IPClass(ip))
+    print("Binary IP-Adress: ", dec2bin(ip))
+    print("Number of hosts: ", hosts)
+    print("Number of subnets: ", subnets)
+    print("Number of hosts per subnet: ", hostsPerSubnet)
+    print("First IP-Adress: ", firstIP)
+    print("Last IP-Adress: ", lastIP)
+    print("Binary Netmask: ", netmask_bin)
+    input("Press Enter to continue...")
+    start()
