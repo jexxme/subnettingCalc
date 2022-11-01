@@ -1,14 +1,8 @@
-from itertools import count
-import math
 import os
 
 ###############################################################################
 # Function Calls
 ###############################################################################
-
-
-def hostAmountCalc(hostAmount):
-    return math.log(hostAmount, 2)
 
 
 def ipClass(ip):
@@ -41,7 +35,6 @@ def nNsShHNotation(netzwerkTeilBits, subnetTeilBits, hostTeilBits):
     nshNotation = nshNotation.replace("s" * 8, "S")
     nshNotation = nshNotation.replace("h" * 8, "H")
     print("nNsShH Notation: ", nshNotation)
-
     return nshNotation
 
 
@@ -69,10 +62,8 @@ def bitCalc(CIDR, requiredSubnetAmount):
         else:
             exponent = exponent + 1
             # print("Exponent:", exponent,  "-> not enough subnets")
-
     hostTeilBits = subnetHostTeilBits - requiredSubnetBitAmount
     subnetTeilBits = requiredSubnetBitAmount
-
     return netzwerkTeilBits, subnetHostTeilBits, subnetTeilBits, hostTeilBits, requiredSubnetBitAmount, possibleSubnets, possibleSubnetsAmount
 
 
@@ -87,13 +78,11 @@ def subnetmaskCalc(ip, requiredSubnetAmount, CIDR):
           bitCalc(CIDR, requiredSubnetAmount)[4])
     print("Possible Subnet Amount: ", bitCalc(CIDR, requiredSubnetAmount)[6])
     print("Possible Subnets: ", bitCalc(CIDR, requiredSubnetAmount)[5])
-
     requiredSubnetBITAmount = bitCalc(CIDR, requiredSubnetAmount)[4]
 
     # Calculate SubnetStepWidth
-    # Funktioniert mit 300 Subnets nicht
     STEP = 256 / (2 ** requiredSubnetBITAmount)
-    print("\n\nSubnet STEP-Weite: ", STEP)
+    print("\nSubnet STEP-Weite: ", STEP)
 
     # Calculate SubnetAdresses
     subnetAdresses = []
@@ -105,7 +94,6 @@ def subnetmaskCalc(ip, requiredSubnetAmount, CIDR):
         subnetAdresses.insert
 
     # Prepare IP-Adress in List
-    print("\n\nIP-Adress: ", ip)
     ip = ip.split(".")
     ip = [int(i) for i in ip]
     # print("IP-Adress Octets: ", ip)
@@ -115,40 +103,68 @@ def subnetmaskCalc(ip, requiredSubnetAmount, CIDR):
     for i in range(0, 4):
         ipBin.append(bin(ip[i])[2:].zfill(8))
     ipBinString = ".".join(ipBin)
-    print("IP Bin String: ", ipBinString)
-    print("IP Bin: ", ipBin)
 
     nNsShHNotation(bitCalc(
         CIDR, requiredSubnetAmount)[0], bitCalc(CIDR, requiredSubnetAmount)[2], bitCalc(CIDR, requiredSubnetAmount)[3])
-
+    print()
 
 ###############################################################################
     # Insert SubnetBits into IP-Adress
-    # Given :
-    # Possible Subnets:  ['00', '01', '10', '11']
-    # IP Bin String:  11000000.10101000.00000000.00000000
+    possibleSubnets = bitCalc(CIDR, requiredSubnetAmount)[5]
 
-    indexSBits = int(CIDR) + 1
+    # Prepare IP-Adress for Subnet Insertion
+    ipBinString = ipBinString.replace(".", "")
+    ipBinString = list(ipBinString)
+    print("IP Bin String: ", ipBinString)
 
-    # 0-Amount of Subnets
-    for i in range(0, len(bitCalc(CIDR, requiredSubnetAmount)[6])):
-        ipSubnetBin =
+    # Calculate Index of SubnetBits
+    firstIndexOfSubnet = int(CIDR) + 1
+    lastIndexOfSubnet = int(CIDR) + int(requiredSubnetBITAmount)
 
-    def insert(string, index):
-        return string[:index] + '-' + string[index:]
+    # Insert SubnetBits into IP-Adress
+    ipSubnetBinary = []
+    ipSubnetBinary = ipBinString
 
-    for i in len(ipBinString)-4:
+    ipSubnetBinarySplitted = []
+    for i in range(0, len(possibleSubnets)):
+        ipSubnetBinary[firstIndexOfSubnet -
+                       1:lastIndexOfSubnet] = possibleSubnets[i]
+        ipSubnetBinarySplitted.append(ipSubnetBinary[:])
 
-        # ipBinSolo[] =
+    # Convert ipSubnetBinarySplitted to String
+    ipSubnetBinarySplittedString = []
+    for i in range(0, len(possibleSubnets)):
+        ipSubnetBinarySplittedString.append(
+            "".join(ipSubnetBinarySplitted[i]))
 
-        # print insert("355879ACB6", 5)
+    # Add "." after every 8 Bits
+    for i in range(0, len(possibleSubnets)):
+        ipSubnetBinarySplittedString[i] = ipSubnetBinarySplittedString[i][0:8] + \
+            "." + ipSubnetBinarySplittedString[i][8:16] + \
+            "." + ipSubnetBinarySplittedString[i][16:24] + \
+            "." + ipSubnetBinarySplittedString[i][24:32]
+        print("IP Subnet Binary Splitted String (Subnet:", i, "):",
+              ipSubnetBinarySplittedString[i])
 
-        # IDK
-        # for i in range(int(CIDR)+1, int(CIDR)+requiredSubnetBITAmount+1):
-        #     print("HI", i)
-        #     ipSubnetBinary[i] = ipBin[]
+    # Convert Binary Ip Adress to Decimal Ip Adress
+    ipSubnetDecimal = []
+    for i in range(0, len(possibleSubnets)):
+        ipSubnetDecimal.append(
+            [int(ipSubnetBinarySplittedString[i][0:8], 2),
+             int(ipSubnetBinarySplittedString[i][9:17], 2),
+             int(ipSubnetBinarySplittedString[i][18:26], 2),
+             int(ipSubnetBinarySplittedString[i][27:35], 2)
+             ])
+        print("IP Subnet Decimal (Subnet:", i, "):", ipSubnetDecimal[i])
 
-        ###############################################################################
+    # Calculate Network Adress
+    networkAdress = []
+    for i in range(0, len(possibleSubnets)):
+        networkAdress.append(
+            [ipSubnetDecimal[i][0], ipSubnetDecimal[i][1], ipSubnetDecimal[i][2], ipSubnetDecimal[i][3]])
+        print("Network Adress (Subnet:", i, "):", networkAdress[i])
+
+    # Calculate Broadcast Adress
 
 
 def fullCalc():
@@ -178,25 +194,27 @@ def main():
     print("-----------------------------------------------------")
     print('       Welcome to the IP-Adress Programm!            ')
     print("-----------------------------------------------------")
-    print("\n       What do you want to do?                     ")
+    print("            What do you want to do?                  ")
     print("-----------------------------------------------------")
-    print("1. Input: IP-Adress, Subnet Amount, Host Amount")
+    print("1. X")
     print('2. Input: IP-Adress, Host Amount, CIDR')
-    print("3. Input: IP-Adress, Netmask/CIDR")
+    print("3. Unmögliche Aufgabe")
     print("4. TEST")
-    print("5. Input: IP-Adress")
+    print("5. X")
     print("6. Exit")
     print("-----------------------------------------------------")
     choice = input("Your choice: ")
     os.system('cls' if os.name == 'nt' else 'clear')
     if choice == "1":
-        fullCalc()
+        exit()
     elif choice == "2":
         ipHostCidrMain()
     elif choice == "3":
-        exit()
+        subnetmaskCalc("172.16.0.0", "300", "17")
     elif choice == "4":
-        subnetmaskCalc("192.168.0.0", "4", "24")
+        subnetmaskCalc("192.168.178.0", "4", "24")
+    elif choice == "5":
+        exit()
     elif choice == "6":
         exit()
     else:
@@ -207,21 +225,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# TODOS:
-#
-#
-# Resourcen:
-# https://networkengineering.stackexchange.com/questions/28121/maximum-number-of-subnets
-#
-# Aufgabe:
-# 172.16.0.0/16 auf 300 Netze
-# Bits/Hosts/Schema/Alle N+BC-Adressen!
-#
-#
-#
-# Host bits = Log2(Number-of-hosts) = Log2(100) = 6.643
-#
-#
-#
-#
