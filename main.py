@@ -167,23 +167,11 @@ def subnetmaskCalc(ip, requiredSubnetAmount, CIDR):
     # Calculate Broadcast Adress
 
 
-def fullCalc():
-    pass
-
-
 def ipHostCidrMain():
     ip = input("IP-Adress: ")
     hostAmount = int(input("Host Amount: "))
     CIDR = int(input("CIDR: "))
     subnetmaskCalc(ip, hostAmount, CIDR)
-
-
-def NetmaskCalc():
-    pass
-
-
-def HostAmountCalc():
-    pass
 
 
 ###############################################################################
@@ -196,26 +184,20 @@ def main():
     print("-----------------------------------------------------")
     print("            What do you want to do?                  ")
     print("-----------------------------------------------------")
-    print("1. X")
-    print('2. Input: IP-Adress, Host Amount, CIDR')
-    print("3. Unmögliche Aufgabe")
-    print("4. TEST")
-    print("5. X")
-    print("6. Exit")
+    print("1. Input: IP-Adress, Host Amount, CIDR")
+    print('\n2. TEST: 192.168.178.0, 4, 24')
+    print("\n3. Unmögliche Aufgabe")
+    print("\n\n0. Exit")
     print("-----------------------------------------------------")
     choice = input("Your choice: ")
     os.system('cls' if os.name == 'nt' else 'clear')
     if choice == "1":
-        exit()
-    elif choice == "2":
         ipHostCidrMain()
+    elif choice == "2":
+        subnetmaskCalc("192.168.178.0", "4", "24")
     elif choice == "3":
         subnetmaskCalc("172.16.0.0", "300", "17")
-    elif choice == "4":
-        subnetmaskCalc("192.168.178.0", "4", "24")
-    elif choice == "5":
-        exit()
-    elif choice == "6":
+    elif choice == "0":
         exit()
     else:
         print("Invalid input!")
