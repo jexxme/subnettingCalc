@@ -42,16 +42,12 @@ def bitCalc(CIDR, requiredSubnetAmount):
     # Calculate the amount of bits for the network and subnet/host part
     netzwerkTeilBits = int(CIDR)
     subnetHostTeilBits = 32 - netzwerkTeilBits
-    # SubnetBitCalculation
     notEnoughSubnets = True
     exponent = 0
     while notEnoughSubnets == True:
         if (2 ** exponent) >= int(requiredSubnetAmount):
             notEnoughSubnets = False
-            # print("Sufficient subnets found with exponent:", exponent,
-            #   "\nSubnet amount with exponent", exponent, "is", 2 ** exponent)
             requiredSubnetBitAmount = exponent
-
             # Calculate possible Subnets with the required SubnetBits in Binary
             possibleSubnets = []
             for i in range(0, 2**requiredSubnetBitAmount):
@@ -61,7 +57,6 @@ def bitCalc(CIDR, requiredSubnetAmount):
             possibleSubnetsAmount = len(possibleSubnets)
         else:
             exponent = exponent + 1
-            # print("Exponent:", exponent,  "-> not enough subnets")
     hostTeilBits = subnetHostTeilBits - requiredSubnetBitAmount
     subnetTeilBits = requiredSubnetBitAmount
     return netzwerkTeilBits, subnetHostTeilBits, subnetTeilBits, hostTeilBits, requiredSubnetBitAmount, possibleSubnets, possibleSubnetsAmount
@@ -96,7 +91,6 @@ def subnetmaskCalc(ip, requiredSubnetAmount, CIDR):
     # Prepare IP-Adress in List
     ip = ip.split(".")
     ip = [int(i) for i in ip]
-    # print("IP-Adress Octets: ", ip)
 
     # Calculate Binary IP-Adresses
     ipBin = []
@@ -108,14 +102,12 @@ def subnetmaskCalc(ip, requiredSubnetAmount, CIDR):
         CIDR, requiredSubnetAmount)[0], bitCalc(CIDR, requiredSubnetAmount)[2], bitCalc(CIDR, requiredSubnetAmount)[3])
     print()
 
-###############################################################################
     # Insert SubnetBits into IP-Adress
     possibleSubnets = bitCalc(CIDR, requiredSubnetAmount)[5]
 
     # Prepare IP-Adress for Subnet Insertion
     ipBinString = ipBinString.replace(".", "")
     ipBinString = list(ipBinString)
-    print("IP Bin String: ", ipBinString)
 
     # Calculate Index of SubnetBits
     firstIndexOfSubnet = int(CIDR) + 1
@@ -164,12 +156,6 @@ def subnetmaskCalc(ip, requiredSubnetAmount, CIDR):
             [ipSubnetDecimal[i][0], ipSubnetDecimal[i][1], ipSubnetDecimal[i][2], ipSubnetDecimal[i][3]])
         print("Network Adress (Subnet:", i, "):", networkAdress[i])
 
-    # Calculate Broadcast Adress
-
-
-def fullCalc():
-    pass
-
 
 def ipHostCidrMain():
     ip = input("IP-Adress: ")
@@ -177,18 +163,11 @@ def ipHostCidrMain():
     CIDR = int(input("CIDR: "))
     subnetmaskCalc(ip, hostAmount, CIDR)
 
-
-def NetmaskCalc():
-    pass
-
-
-def HostAmountCalc():
-    pass
-
-
 ###############################################################################
 # Main
 ###############################################################################
+
+
 def main():
     os.system('cls' if os.name == 'nt' else 'clear')
     print("-----------------------------------------------------")
@@ -196,26 +175,20 @@ def main():
     print("-----------------------------------------------------")
     print("            What do you want to do?                  ")
     print("-----------------------------------------------------")
-    print("1. X")
-    print('2. Input: IP-Adress, Host Amount, CIDR')
-    print("3. Unmögliche Aufgabe")
-    print("4. TEST")
-    print("5. X")
-    print("6. Exit")
+    print("1. Input: IP-Adress, Host Amount, CIDR\n")
+    print('2. Aufgabe: 192.168.178.0/24, 4 Hosts, /24 CIDR\n')
+    print("3. Unmögliche Aufgabe (300 Hosts)\n")
+    print("0. Exit")
     print("-----------------------------------------------------")
     choice = input("Your choice: ")
     os.system('cls' if os.name == 'nt' else 'clear')
     if choice == "1":
-        exit()
-    elif choice == "2":
         ipHostCidrMain()
+    elif choice == "2":
+        subnetmaskCalc("192.168.178.0", "4", "24")
     elif choice == "3":
         subnetmaskCalc("172.16.0.0", "300", "17")
-    elif choice == "4":
-        subnetmaskCalc("192.168.178.0", "4", "24")
-    elif choice == "5":
-        exit()
-    elif choice == "6":
+    elif choice == "0":
         exit()
     else:
         print("Invalid input!")
